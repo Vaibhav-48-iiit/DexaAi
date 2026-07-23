@@ -51,6 +51,9 @@ npm install
 ```
 Create a `.env` file in the `Backend` directory and add the following:
 ```env
+PORT=port_number
+mongodb_uri=your_mongodb_uri
+jwt_secret=your_super_secret_jwt_key_here
 ollama_Host=http://127.0.0.1:11434
 ```
 Start the backend server:

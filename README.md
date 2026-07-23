@@ -85,4 +85,4 @@ npm run dev
 
 ## 🛠️ Tech Stack
 * **Frontend:** React, Vite, Tailwind CSS, Three.js (WebGL), Web Audio API
-* **Backend:** Node.js, Express, Ollama (Llama 3.2), Windows Child Processes
+* **Backend:** Node.js, Express, MongoDB , Ollama (Llama 3.2), Windows Child Processes

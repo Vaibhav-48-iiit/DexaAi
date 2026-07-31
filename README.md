@@ -2,7 +2,7 @@
 
 Dexa.AI is a highly interactive, futuristic Local AI Assistant built for Windows. It features a JARVIS-inspired, audio-reactive 3D particle orb, real-time Speech-to-Text (STT), and native Windows OS automation. 
 
-Powered entirely by **Ollama (Llama 3.2)** running locally on your machine, Dexa.AI is fast, private, and capable of executing real computer commands (like opening websites, searching files, and launching applications) directly from your voice.
+Powered by **Groq Cloud APIs (Llama 3.3 70B & Orpheus TTS)**, Dexa.AI is blazing-fast and capable of executing real computer commands (like opening websites, searching files, and launching applications) directly from your voice.
 
 ---
 
@@ -11,7 +11,7 @@ Powered entirely by **Ollama (Llama 3.2)** running locally on your machine, Dexa
 - **Audio-Reactive 3D Hologram:** A custom WebGL (Three.js) particle swarm that dynamically scales, pulses, and rotates based on the pitch and volume of your voice.
 - **Flawless Voice Recognition:** Real-time Speech-to-Text (STT) with smart debouncing to prevent endless echo loops and race conditions.
 - **Local OS Automation:** Dexa can control your PC natively! Ask her to "Open YouTube," "Play Spotify," or "Find my react folder."
-- **100% Local Processing:** Uses Ollama as the backend LLM engine, ensuring your data never leaves your computer.
+- **Ultra-Fast Cloud Intelligence:** Uses Groq's LPU inference engine for lightning-fast responses from the massive Llama-3.3-70b model, paired with Canopy's Orpheus natural voice engine.
 
 ---
 
@@ -23,16 +23,13 @@ Follow these instructions to clone the project, install dependencies, and run De
 You will need the following installed on your computer:
 * [Node.js](https://nodejs.org/en) (v16 or higher)
 * [Git](https://git-scm.com/)
-* [Ollama](https://ollama.com/) (Required for the local AI backend)
+* A free [Groq API Key](https://console.groq.com/keys) (Required for the AI backend)
 
-### 2. Install & Run Ollama
-Dexa.AI uses the Llama 3.2 model to process commands. 
-1. Download and install **Ollama**.
-2. Open your terminal and pull the model by running:
-   ```bash
-   ollama run llama3.2
-   ```
-   *(Keep Ollama running in the background while using Dexa.AI).*
+### 2. Get a Groq API Key
+Dexa.AI uses Groq's blazing-fast Llama 3.3 70B model to process commands and Orpheus TTS for its voice.
+1. Go to [console.groq.com/keys](https://console.groq.com/keys)
+2. Create a free account (no credit card required).
+3. Generate a new API key and save it for step 4.
 
 ### 3. Clone the Repository
 ```bash
@@ -51,10 +48,10 @@ npm install
 ```
 Create a `.env` file in the `Backend` directory and add the following:
 ```env
-PORT=port_number
-mongodb_uri=your_mongodb_uri
+PORT=3000
+mongodb_uri=mongodb://localhost:27017/DexaAi
 jwt_secret=your_super_secret_jwt_key_here
-ollama_Host=http://127.0.0.1:11434
+GROQ_API_KEY=gsk_your_groq_api_key_here
 ```
 Start the backend server:
 ```bash
@@ -85,4 +82,4 @@ npm run dev
 
 ## 🛠️ Tech Stack
 * **Frontend:** React, Vite, Tailwind CSS, Three.js (WebGL), Web Audio API
-* **Backend:** Node.js, Express, MongoDB , Ollama (Llama 3.2), Windows Child Processes
+* **Backend:** Node.js, Express, MongoDB, Groq SDK (Llama 3.3 70B & Orpheus TTS), Windows Child Processes

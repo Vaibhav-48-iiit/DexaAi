@@ -1,11 +1,18 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000/api/ai';
-const FILES_URL = 'http://localhost:3000/api/files';
+const aiApi = axios.create({
+    baseURL: 'http://localhost:3000/api/ai',
+    withCredentials: true
+});
+
+const filesApi = axios.create({
+    baseURL: 'http://localhost:3000/api/files',
+    withCredentials: true
+});
 
 export const generateAiResponse = async (prompt) => {
     try {
-        const response = await axios.post(`${API_URL}/generate-response`, { prompt });
+        const response = await aiApi.post('/generate-response', { prompt });
         return response.data;
     } catch (error) {
         console.error("Error generating AI response:", error);
@@ -15,7 +22,7 @@ export const generateAiResponse = async (prompt) => {
 
 export const executeAiCommand = async (command) => {
     try {
-        const response = await axios.post(`${API_URL}/execute`, { command });
+        const response = await aiApi.post('/execute', { command });
         return response.data;
     } catch (error) {
         console.error("Error executing AI command:", error);
@@ -25,10 +32,22 @@ export const executeAiCommand = async (command) => {
 
 export const searchFiles = async (query, drive) => {
     try {
-        const response = await axios.post(`${FILES_URL}/search`, { query, drive });
+        const response = await filesApi.post('/search', { query, drive });
         return response.data;
     } catch (error) {
         console.error("Error searching files:", error);
         throw error;
     }
 };
+export const generateSpeech = async (text) => {
+    try {
+        const response = await aiApi.post('/tts', { text }, {
+            responseType: 'blob'  // IMPORTANT: tells axios to return binary audio data
+        });
+        return response.data;  // This is a Blob containing WAV audio
+    } catch (error) {
+        console.error("Error generating speech:", error);
+        throw error;
+    }
+};
+

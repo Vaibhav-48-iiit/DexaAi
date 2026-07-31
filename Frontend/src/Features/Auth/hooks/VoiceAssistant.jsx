@@ -1,4 +1,6 @@
 import { useEffect, useState, useRef } from "react";
+import { generateSpeech } from "../../Ai/ai.service";
+
 
 export const useVoiceAssistant = (onCommandReceived) => {
     const [isListening, setIsListening] = useState(false);
@@ -28,32 +30,27 @@ export const useVoiceAssistant = (onCommandReceived) => {
     }, [isListening]);
 
     // 1. SETUP (TEXT TO SPEECH)
-    const speak = (text, onEndCallback = null) => {
-        window.speechSynthesis.cancel(); // stop anything currently playing
+   const speak = async (text, onEndCallback = null) => {
+    // Abort mic immediately so it doesn't hear itself
+    isSpeakingRef.current = true;
+    if (recognitionRef.current) {
+        recognitionRef.current.abort();
+    }
 
-        // Abort mic immediately so it doesn't hear itself
-        isSpeakingRef.current = true;
-        if (recognitionRef.current) {
-            recognitionRef.current.abort();
-        }
-
-        const utterance = new SpeechSynthesisUtterance(text);
-         
-        const voices = window.speechSynthesis.getVoices();
-        const bestVoice = voices.find(v => v.name === 'Microsoft Aria Online (Natural) - English (United States)');
-
-        if (bestVoice) utterance.voice = bestVoice;
+    try {
+        const audioBlob = await generateSpeech(text);
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
 
         const handleEnd = () => {
+            URL.revokeObjectURL(audioUrl); // Free memory
             if (onEndCallback) {
                 onEndCallback();
             }
-            
-            // Wait 500ms after speaking finishes before unpausing the mic.
-            // This prevents the mic from catching the room echo of Dexa's own voice!
+
             setTimeout(() => {
                 isSpeakingRef.current = false;
-                
+
                 if (isListeningRef.current) {
                     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
                         try { recognitionRef.current?.start(); } catch(e) { console.warn("Mic start error:", e); }
@@ -63,11 +60,20 @@ export const useVoiceAssistant = (onCommandReceived) => {
             }, 500);
         };
 
-        utterance.onend = handleEnd;
-        utterance.onerror = handleEnd;
-        
+        audio.onended = handleEnd;
+        audio.onerror = handleEnd;
+        audio.play();
+    } catch (error) {
+        console.error("Groq TTS failed, falling back to browser voice:", error);
+        // Fallback: use browser TTS if Groq fails
+        isSpeakingRef.current = false;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.onend = () => {
+            if (onEndCallback) onEndCallback();
+        };
         window.speechSynthesis.speak(utterance);
     }
+};
 
     // 2. SETUP (SPEECH TO TEXT)
     useEffect(() => {

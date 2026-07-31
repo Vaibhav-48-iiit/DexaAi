@@ -1,5 +1,5 @@
+require('dotenv').config(); // MUST be first — loads .env before any module reads process.env
 const app = require('./src/app');
-require('dotenv').config();
 const connectDB = require('./src/config/Database');
 
 connectDB();

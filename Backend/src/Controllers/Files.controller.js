@@ -1,7 +1,7 @@
 const { exec } = require('child_process');
 
 const searchFiles = (req, res) => {
-    const { query } = req.body;
+    const { query,drive } = req.body;
 
     if (!query) {
         return res.status(400).json({ message: "Search query is required" });
@@ -12,10 +12,17 @@ const searchFiles = (req, res) => {
     // Escape single quotes for PowerShell
     const safeQuery = query.replace(/'/g, "''");
 
+    // Add a drive filter if a specific drive is requested
+    let driveFilter = '';
+    if (drive) {
+        const safeDrive = drive.replace(/'/g, "''");
+        driveFilter = ` AND System.ItemPathDisplay LIKE ''${safeDrive}%''`;
+    }
+
     const psCommand = `
         $con = New-Object -ComObject ADODB.Connection;
         $con.Open('Provider=Search.CollatorDSO;Extended Properties=''Application=Windows'';');
-        $rs = $con.Execute('SELECT TOP 20 System.ItemPathDisplay FROM SystemIndex WHERE System.FileName LIKE ''%${safeQuery}%''');
+        $rs = $con.Execute('SELECT TOP 50 System.ItemPathDisplay FROM SystemIndex WHERE System.FileName LIKE ''%${safeQuery}%''${driveFilter}');
         $results = @();
         while (-not $rs.EOF) {
             $results += $rs.Fields.Item('System.ItemPathDisplay').Value;

@@ -15,8 +15,8 @@ export async function registerUser({email, password, username}){
     })
     return response.data
   }  catch(error){
-    console.log(error)
-  
+    console.error("Register API error:", error);
+    throw error;
   }
 
 }
@@ -31,8 +31,8 @@ export async function loginUser({email, password}){
     })
     return response.data
   }  catch(error){
-    console.log(error)
-
+    console.error("Login API error:", error);
+    throw error;
   }
 
 }
@@ -45,7 +45,8 @@ export async function logoutUser(){
       })
       return response.data
     }  catch(error){
-      console.log(error)
+      console.error("Logout API error:", error);
+      throw error;
     }
 
 }
@@ -58,7 +59,8 @@ export async function getMe(){
       })
       return response.data
     }  catch(error){
-      console.log(error)
+      console.log("User not authenticated:", error.message);
+      throw error;
     }
 
 }

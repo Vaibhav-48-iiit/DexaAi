@@ -10,47 +10,50 @@ const tokenBlacklistModel = require('../Models/blacklist.model');
  */
 
 async function registerUser(req, res) {
-        
-    const { username, email, password } = req.body;
+    try {
+        const { username, email, password } = req.body;
 
-    if(!username || !email || !password) {
-        return res.status(400).json({ message: 'Please provide all required fields' });
+        if(!username || !email || !password) {
+            return res.status(400).json({ message: 'Please provide all required fields' });
+        }
+
+        const existingUser = await usermodel.findOne({
+            $or: [{ username }, { email }]
+        })
+        if(existingUser) {
+            return res.status(400).json({ message: 'Username or email already exists' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const newUser = new usermodel({
+            username,
+            email,
+            password: hashedPassword
+        });
+
+        await newUser.save();
+
+        const token = jwt.sign(
+            { id: newUser._id },
+            process.env.jwt_secret,
+            { expiresIn: '2d' }
+        );
+
+        res.cookie('token', token, { httpOnly: true });
+
+        res.status(201).json({
+            message: 'User registered successfully',
+            user:{
+                id: newUser._id,
+                username: newUser.username,
+                email: newUser.email,
+            }
+        });
+    } catch (error) {
+        console.error("Registration error:", error);
+        return res.status(500).json({ message: 'Internal server error during registration' });
     }
-
-     const existingUser = await usermodel.findOne({
-        $or: [{ username }, { email }]
-     })
-if(existingUser) {
-    return res.status(400).json({ message: 'Username or email already exists' });
-}
-
-const hashedPassword = await bcrypt.hash(password, 10);
-
-const newUser = new usermodel({
-    username,
-    email,
-    password: hashedPassword
-});
-
-await newUser.save();
-
-const token = jwt.sign(
-    { id: newUser._id },
-    process.env.jwt_secret,
-    { expiresIn: '2d' }
-);
-
-res.cookie('token', token, { httpOnly: true });
-
-res.status(201).json({
-    message: 'User registered successfully',
-    user:{
-        id: newUser._id,
-        username: newUser.username,
-        email: newUser.email,
-    }
-});
-
 }
 /**
  * @route POST /api/auth/login
@@ -59,43 +62,45 @@ res.status(201).json({
  */
 
 async function loginUser(req, res) {
+    try {
+        const { email, password } = req.body;
 
-    const { email, password } = req.body;
-
-    if(!email || !password) {
-        return res.status(400).json({ message: 'Please provide all required fields' });
-    }
-
-    const user = await usermodel.findOne({ email });
-
-    if(!user) {
-        return res.status(400).json({ message: 'Invalid email or password' });
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
-
-    if(!isPasswordValid) {
-        return res.status(400).json({ message: 'Invalid email or password' });
-    }
-
-    const token = jwt.sign(
-        { id: user._id },
-        process.env.jwt_secret,
-        { expiresIn: '2d' }
-    );
-
-    res.cookie('token', token);
-
-    res.status(200).json({
-        message: 'User logged in successfully',
-        user: {
-            id: user._id,
-            username: user.username,
-            email: user.email
+        if(!email || !password) {
+            return res.status(400).json({ message: 'Please provide all required fields' });
         }
-        
-    });
 
+        const user = await usermodel.findOne({ email });
+
+        if(!user) {
+            return res.status(400).json({ message: 'Invalid email or password' });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+
+        if(!isPasswordValid) {
+            return res.status(400).json({ message: 'Invalid email or password' });
+        }
+
+        const token = jwt.sign(
+            { id: user._id },
+            process.env.jwt_secret,
+            { expiresIn: '2d' }
+        );
+
+        res.cookie('token', token);
+
+        res.status(200).json({
+            message: 'User logged in successfully',
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email
+            }
+        });
+    } catch (error) {
+        console.error("Login error:", error);
+        return res.status(500).json({ message: 'Internal server error during login' });
+    }
 }
 
 /**
@@ -105,16 +110,18 @@ async function loginUser(req, res) {
  */
 
 async function logoutUser(req, res) {
-
-    res.clearCookie('token');
-    res.status(200).json({ message: 'User logged out successfully' });
-
-    const token = req.cookies.token;
-    if (token) {
-        await tokenBlacklistModel.create({ token });
+    try {
+        const token = req.cookies.token;
+        if (token) {
+            await tokenBlacklistModel.create({ token });
+        }
+        res.clearCookie('token');
+        res.status(200).json({ message: 'User logged out successfully' });
+    } catch (error) {
+        console.error("Logout error:", error);
+        res.clearCookie('token');
+        res.status(200).json({ message: 'User logged out successfully' });
     }
-    
-
 }
 
 /**

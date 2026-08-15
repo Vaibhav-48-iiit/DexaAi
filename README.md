@@ -2,7 +2,7 @@
 
 Dexa.AI is a highly interactive, futuristic Local AI Assistant built for Windows. It features a JARVIS-inspired, audio-reactive 3D particle orb, real-time Speech-to-Text (STT), and native Windows OS automation. 
 
-Powered by **Groq Cloud APIs (Llama 3.3 70B & Orpheus TTS)**, Dexa.AI is blazing-fast and capable of executing real computer commands (like opening websites, searching files, and launching applications) directly from your voice.
+Powered by **Groq Cloud APIs (Llama 3.3 70B)**, Dexa.AI is blazing-fast and capable of executing real computer commands (like opening websites, searching files, and launching applications) directly from your voice.
 
 ---
 
@@ -11,7 +11,7 @@ Powered by **Groq Cloud APIs (Llama 3.3 70B & Orpheus TTS)**, Dexa.AI is blazing
 - **Audio-Reactive 3D Hologram:** A custom WebGL (Three.js) particle swarm that dynamically scales, pulses, and rotates based on the pitch and volume of your voice.
 - **Flawless Voice Recognition:** Real-time Speech-to-Text (STT) with smart debouncing to prevent endless echo loops and race conditions.
 - **Local OS Automation:** Dexa can control your PC natively! Ask her to "Open YouTube," "Play Spotify," or "Find my react folder."
-- **Ultra-Fast Cloud Intelligence:** Uses Groq's LPU inference engine for lightning-fast responses from the massive Llama-3.3-70b model, paired with Canopy's Orpheus natural voice engine.
+- **Ultra-Fast Cloud Intelligence:** Uses Groq's LPU inference engine for lightning-fast responses from the massive Llama-3.3-70b model, paired with the browser's native Web Speech API for zero-latency voice interaction.
 
 ---
 
@@ -26,7 +26,7 @@ You will need the following installed on your computer:
 * A free [Groq API Key](https://console.groq.com/keys) (Required for the AI backend)
 
 ### 2. Get a Groq API Key
-Dexa.AI uses Groq's blazing-fast Llama 3.3 70B model to process commands and Orpheus TTS for its voice.
+Dexa.AI uses Groq's blazing-fast Llama 3.3 70B model to process commands.
 1. Go to [console.groq.com/keys](https://console.groq.com/keys)
 2. Create a free account (no credit card required).
 3. Generate a new API key and save it for step 4.
@@ -82,4 +82,4 @@ npm run dev
 
 ## 🛠️ Tech Stack
 * **Frontend:** React, Vite, Tailwind CSS, Three.js (WebGL), Web Audio API
-* **Backend:** Node.js, Express, MongoDB, Groq SDK (Llama 3.3 70B & Orpheus TTS), Windows Child Processes
+* **Backend:** Node.js, Express, MongoDB, Groq SDK (Llama 3.3 70B), Windows Child Processes

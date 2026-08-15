@@ -2,7 +2,7 @@
 
 Dexa.AI is a highly interactive, futuristic Local AI Assistant built for Windows. It features a JARVIS-inspired, audio-reactive 3D particle orb, real-time Speech-to-Text (STT), and native Windows OS automation. 
 
-Powered by **Groq Cloud APIs (Llama 3.3 70B)**, Dexa.AI is blazing-fast and capable of executing real computer commands (like opening websites, searching files, and launching applications) directly from your voice.
+Powered by **Groq Cloud APIs (openai/gpt-oss-120b)**, Dexa.AI is blazing-fast and capable of executing real computer commands (like opening websites, searching files, and launching applications) directly from your voice.
 
 ---
 
